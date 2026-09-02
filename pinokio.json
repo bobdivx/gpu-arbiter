@@ -1,0 +1,6 @@
+{
+  "title": "GPU Arbiter",
+  "description": "Time-sharing GPU (LLM / ACE / Wan) + priorité Steam — dashboard web Astro",
+  "version": "1.0.0",
+  "icon": "icon.svg"
+}

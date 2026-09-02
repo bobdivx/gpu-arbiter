@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# CLI Demeter GPU Arbiter — time-sharing LLM / ACE / Wan (+ priorité Steam)
+# Usage:
+#   demeter-gpu status
+#   demeter-gpu use llm|ace|wan
+#   demeter-gpu release
+#   demeter-gpu touch
+set -euo pipefail
+
+API="${GPU_ARBITER_URL:-http://127.0.0.1:8790}"
+OWNER="${GPU_ARBITER_OWNER:-cli-$(hostname)-$USER}"
+
+json_get() {
+  curl -sf "$API$1"
+}
+
+cmd="${1:-status}"
+case "$cmd" in
+  status|s)
+    json_get /status | python3 -m json.tool 2>/dev/null || json_get /status
+    ;;
+  use|acquire)
+    slot="${2:-}"
+    if [[ -z "$slot" ]]; then
+      echo "Usage: demeter-gpu use llm|ace|wan" >&2
+      exit 1
+    fi
+    echo ">> Acquire GPU slot=$slot (Steam prioritaire si un jeu tourne)..."
+    curl -sf -X POST "$API/acquire" \
+      -H 'Content-Type: application/json' \
+      -d "{\"slot\":\"$slot\",\"owner\":\"$OWNER\",\"timeout_s\":900}" \
+      | python3 -m json.tool 2>/dev/null
+    ;;
+  release)
+    curl -sf -X POST "$API/release" \
+      -H 'Content-Type: application/json' \
+      -d "{\"owner\":\"$OWNER\"}" \
+      | python3 -m json.tool 2>/dev/null
+    ;;
+  touch)
+    curl -sf -X POST "$API/touch" \
+      -H 'Content-Type: application/json' \
+      -d "{\"owner\":\"$OWNER\"}" \
+      | python3 -m json.tool 2>/dev/null
+    ;;
+  *)
+    echo "Usage: demeter-gpu status|use llm|use ace|use wan|release|touch" >&2
+    echo "Note: Steam/jeux = priorité auto (slot steam)." >&2
+    exit 1
+    ;;
+esac
