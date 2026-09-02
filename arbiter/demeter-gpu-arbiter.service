@@ -8,7 +8,8 @@ Type=simple
 WorkingDirectory=/mnt/ia/pinokio/api/gpu-arbiter
 Environment=PINOKIO_HOME=/mnt/ia/pinokio
 Environment=IA_ROOT=/mnt/ia
-Environment=DEMETER_REPO=%h/Documents/devforge
+Environment=DEMETER_REPO=%h/Documents/demeter-lab
+Environment=DEMETER_LAB=%h/Documents/demeter-lab
 Environment=GPU_ARBITER_HOST=0.0.0.0
 Environment=GPU_ARBITER_PORT=8790
 Environment=GPU_ARBITER_DEFAULT=llm

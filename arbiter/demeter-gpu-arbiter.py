@@ -49,8 +49,16 @@ def _env_int(name: str, default: int) -> int:
 
 PORT = _env_int("GPU_ARBITER_PORT", 8790)
 PINOKIO = Path(os.environ.get("PINOKIO_HOME", "/mnt/ia/pinokio"))
-REPO = Path(os.environ.get("DEMETER_REPO", str(Path.home() / "Documents/devforge")))
-BOOT = REPO / "scripts" / "demeter-bootstrap"
+REPO = Path(
+    os.environ.get("DEMETER_LAB")
+    or os.environ.get("DEMETER_REPO")
+    or str(Path.home() / "Documents/demeter-lab")
+)
+# Compat : ancien layout monorepo (…/devforge/scripts/demeter-bootstrap) ou demeter-lab/
+if (REPO / "demeter-bootstrap").is_dir():
+    BOOT = REPO / "demeter-bootstrap"
+else:
+    BOOT = REPO / "scripts" / "demeter-bootstrap"
 LOG = Path(os.environ.get("GPU_ARBITER_LOG", "/mnt/ia/logs/gpu-arbiter.log"))
 IDLE_RELEASE_S = int(os.environ.get("GPU_ARBITER_IDLE_S", "900"))  # 15 min
 DEFAULT_SLOT = os.environ.get("GPU_ARBITER_DEFAULT", "llm")
