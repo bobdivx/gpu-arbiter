@@ -37,7 +37,17 @@ from typing import Any
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
 HOST = os.environ.get("GPU_ARBITER_HOST", "0.0.0.0")
-PORT = int(os.environ.get("GPU_ARBITER_PORT", "8790"))
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = (os.environ.get(name) or "").strip()
+    # Pinokio peut injecter des littéraux non expansés du type ${VAR:-8790}
+    if not raw or raw.startswith("${") or not raw.lstrip("-").isdigit():
+        return default
+    return int(raw)
+
+
+PORT = _env_int("GPU_ARBITER_PORT", 8790)
 PINOKIO = Path(os.environ.get("PINOKIO_HOME", "/mnt/ia/pinokio"))
 REPO = Path(os.environ.get("DEMETER_REPO", str(Path.home() / "Documents/devforge")))
 BOOT = REPO / "scripts" / "demeter-bootstrap"

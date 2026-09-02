@@ -6,7 +6,7 @@ module.exports = {
       params: {
         env: {
           GPU_ARBITER_HOST: "0.0.0.0",
-          GPU_ARBITER_PORT: "${GPU_ARBITER_PORT:-8790}",
+          GPU_ARBITER_PORT: "8790",
           GPU_ARBITER_UI_DIST: "{{cwd}}/ui/dist",
           PINOKIO_HOME: "{{path.resolve(cwd, '..')}}",
         },
@@ -22,14 +22,14 @@ module.exports = {
     {
       method: "local.set",
       params: {
-        url: "http://127.0.0.1:${GPU_ARBITER_PORT:-8790}",
-        port: "${GPU_ARBITER_PORT:-8790}",
+        url: "http://127.0.0.1:8790",
+        port: 8790,
       },
     },
     {
       method: "process.wait",
       params: {
-        url: "http://127.0.0.1:${GPU_ARBITER_PORT:-8790}/health",
+        url: "http://127.0.0.1:8790/health",
         interval: 2,
         title: "GPU Arbiter",
         description: "Dashboard + API — port 8790",
