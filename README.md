@@ -61,4 +61,6 @@ Dashboard : `http://10.1.0.88:8790/`
 
 ## Partage
 
-Repo prêt à publier : dossier autonome `scripts/pinokio-gpu-arbiter/` (pinokio.json + install/start + arbiter + ui).
+Repo public : **https://github.com/bobdivx/gpu-arbiter**
+
+Pinokio → Discover / clone cette URL, puis Install + Start.
