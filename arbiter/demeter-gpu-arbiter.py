@@ -92,9 +92,9 @@ STEAM_NAME_RE = re.compile(
 )
 # Processus IA / système à ignorer pour la détection « jeu »
 AI_OR_SYS_RE = re.compile(
-    r"(llama-server|acestep|python|tsx|node|litellm|Xorg|Xwayland|"
-    r"gnome-shell|plasmashell|kwin|nvidia|nvcontainer|cuda|"
-    r"demeter-gpu|pinokio)",
+    r"(llama-server|acestep|ace-step|/env/bin/python|python3?(\s|$)|tsx|node|litellm|"
+    r"Xorg|Xwayland|gnome-shell|plasmashell|kwin|nvidia|nvcontainer|cuda|"
+    r"demeter-gpu|pinokio|electron)",
     re.I,
 )
 
@@ -252,13 +252,21 @@ def detect_steam_priority() -> dict[str, Any] | None:
     apps = gpu_compute_apps()
     for a in apps:
         name = a["name"]
-        if re.search(r"llama-server|acestep|kwin|Xorg|Xwayland", name, re.I):
+        # Jamais traiter les process IA / bureau comme un « jeu » (sinon ACE/LLM
+        # → fausse priorité Steam → stop_ace pendant le chargement modèle).
+        if AI_OR_SYS_RE.search(name):
             continue
         if a["used_mib"] < STEAM_VRAM_MIN_MIB:
             continue
-        if steam_client_running() or reasons:
-            if re.search(r"steamwebhelper|steam$", name, re.I) and a["used_mib"] < 1500:
-                continue
+        if re.search(r"steamwebhelper|steam$", name, re.I) and a["used_mib"] < 1500:
+            continue
+        looks_game = bool(
+            re.search(r"\.exe$|proton|wine64|wine-preloader|reaper|gamesoverlay", name, re.I)
+        )
+        # Heuristique VRAM seule : seulement si indices jeu déjà là, ou binaire jeu-like
+        if not reasons and not looks_game:
+            continue
+        if steam_client_running() or reasons or looks_game:
             game_apps.append(a)
             reasons.append(f"vram:{name}:{a['used_mib']}MiB")
 
